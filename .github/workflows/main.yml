@@ -2,26 +2,33 @@ name: 📄 LaTeX to PDF Compiler
 
 on:
   push:
-    branches:
-      - main
+    branches: - main
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: ⚙️ Checkout repository code
-        uses: actions/checkout@v4
+permissions:
+  contents: write
 
-      - name: 📝 Compile LaTeX to PDF using `pdflatex`
-        uses: xu-cheng/latex-action@v2
-        with:
-          root_file: main.tex
-          compiler: latexmk
+steps:
+  - name: ⚙️ Checkout repository code
+    uses: actions/checkout@v4
 
-      - name: 📤 Commit compiled PDF back to repository
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          files: 'main.pdf'
-          commit_message: 'Docs: Automated PDF compilation of main.tex'
-          branch: ${{ github.ref_name }}
+  - name: 📝 Compile LaTeX to PDF using `pdflatex`
+    uses: xu-cheng/latex-action@v2
+    with:
+      root_file: main.tex
+      compiler: latexmk
+      output_dir: output
+
+  - name: 📤 Commit compiled PDF back to repository
+    uses: stefanzweifel/git-auto-commit-action@v5
+    with:
+      files: 'output/main.pdf'
+      commit_message: 'Docs: Automated PDF compilation of main.tex'
+      branch: ${{ github.ref_name }}
+
+  - name: 📂 Upload PDF as artifact
+    uses: actions/upload-artifact@v4
+    with:
+      name: compiled-pdf
+      path: output/main.pdf
