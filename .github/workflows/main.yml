@@ -1,70 +1,22 @@
-name: Kompilasi Dokumen LaTeX
+name: 📄 LaTeX to PDF Compiler
 
-on: [push, pull_request]
+on: push: branches: - main
+jobs: build_and_deploy: runs-on: ubuntu-latest
+permissions: contents: write # Grant permission to commit files back to the repository
 
-jobs:
-  compile:
-    runs-on: ubuntu-latest  # Menjalankan di lingkungan Ubuntu terbaru
+steps:
+  - name: ⚙️ Checkout repository code
+    uses: actions/checkout@v4
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4.2.2
-        with:
-          fetch-depth: 0 # Pastikan riwayat lengkap untuk perbandingan Git
-      
-      - name: Cache TeX Live
-        id: cache-texlive
-        uses: actions/cache@v4.2.2
-        with:
-          run: mkdir -p $HOME/texlive
-          path: $HOME/texlive
-          key: ${{ runner.os }}-texlive-2024
-          restore-keys: |
-            ${{ runner.os }}-texlive-
+  - name: 📝 Compile LaTeX to PDF using `pdflatex`
+    uses: xu-cheng/latex-action@v2
+    with:
+      root_file: main.tex
+      compiler: latexmk
 
-      - name: Make Scripts Executable
-        run: chmod +x scripts/generate-texlive.sh scripts/texlive.sh
-
-      - name: Install TeX Live (if not cached)
-        if: steps.cache-texlive.outputs.cache-hit != 'true'
-        run: scripts/generate-texlive.sh $HOME/texlive
-
-      - name: Use Cached TeX Live
-        run: scripts/texlive.sh $HOME/texlive main
-        
-      - name: Upload PDF artifact
-        uses: actions/upload-artifact@v4.6.1  # Upload PDF hasil kompilasi
-        with:
-          name: output-pdf  # Nama untuk file yang di-upload
-          path: docs/main.pdf    # Sesuaikan dengan nama file PDF hasil kompilasi Anda
-      
-      - name: Configure Git User
-        run:  |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-      
-      - name: Ensure pdf-updates branch exists
-        run: |
-          if git ls-remote --exit-code --heads origin pdf-updates; then
-            echo "📂 Branch 'pdf-updates' ditemukan di remote."
-            git fetch origin pdf-updates
-            git add docs/main.pdf scripts/generate-texlive.sh
-            git commit -m "Auto-commit for the branch"
-          else
-            echo "⚠️ Branch 'pdf-updates' tidak ditemukan, membuat branch baru..."
-            git checkout -b pdf-updates
-            git push --set-upstream origin pdf-updates
-          fi  
-          # Pastikan kita berada di branch pdf-updates
-          git checkout pdf-updates
-          # Pastikan branch up-to-date sebelum push
-
-      - name: Check if PDF changed
-        run:  |
-          if ! git diff --quiet docs/main.pdf; then
-            git add docs/main.pdf
-            git commit -s -m "Compiled PDF [Update]"
-            git push origin pdf-updates
-          else
-            echo "No changes in PDF. Skipping push."
-          fi
+  - name: 📤 Commit compiled PDF back to repository
+    uses: stefanzweifel/git-auto-commit-action@v5
+    with:
+      files: 'main.pdf'
+      commit_message: 'Docs: Automated PDF compilation of main.tex'
+      branch: ${{ github.ref_name }}
