@@ -1,8 +1,13 @@
 name: 📄 LaTeX to PDF Compiler
 
-on: push: branches: - main
-jobs: build_and_deploy: runs-on: ubuntu-latest
-permissions: contents: write # Grant permission to commit files back to the repository
+on: 
+  push: 
+    branches: - main
+jobs: 
+  build_and_deploy: 
+    runs-on: ubuntu-latest
+permissions: 
+  contents: write
 
 steps:
   - name: ⚙️ Checkout repository code
