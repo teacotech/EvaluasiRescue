@@ -1,13 +1,25 @@
 name: CI
 
-on: [push]
+on: [push, pull_request]
+
 jobs:
-  build-test:
+  compile:
     runs-on: ubuntu-latest
+
     steps:
-      -uses: actions/checkout@v5
-      -uses: hspaans/latexmk-action@v2.1.0
-      -with:
-         filename: ./texfile/main.tex
-      -run: |
-         mv main.pdf ./texfile/main.pdf
+      -name: checkout repo
+       uses: actions/checkout@v5
+
+      -name: Generate PDF
+       uses: hspaans/latexmk-action@v2.1.0
+       with:
+         format: pdf
+         filename: main.tex
+         path: texfile/main.tex
+         options: -shell-escape
+
+      -name: Upload PDF artifact
+       uses: actions/upload-artifact@v4
+       with:
+         name: main.pdf
+         path: texfile/main.pdf
