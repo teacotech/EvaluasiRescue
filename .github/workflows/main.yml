@@ -1,4 +1,4 @@
-name: Compile the .tex to PDF Fuck yeah
+name: CI
 
 on: [push]
 jobs:
