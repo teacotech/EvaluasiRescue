@@ -1,24 +1,35 @@
 name: CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  compile:
+  ngentot:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      -name: checkout repo
-       uses: actions/checkout@v5
-      -run: echo "Bajingan."
+      - name: checkout repo
+        uses: actions/checkout@v4
+      - run: echo "Bajingan."
 
-      -name: Generate PDF
-       uses: hspaans/latexmk-action@v2.1.0
-       with:
-         format: pdf
-         filename: main.tex
-         path: texfile/main.tex
+      - name: Generate PDF
+        uses: hspaans/latexmk-action@v2.1.0
+        with:
+          format: pdf
+          filename: texfile/main.tex
+       
+      - name: commit compiler pdf
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          files: 'main.pdf'
+          commit_message: 'Dokumen: auto compiled pdf'
+          branch: ${{ github.ref_name }}
 
-      -name: Upload PDF artifact
-       uses: actions/upload-artifact@v4
-       with:
-         name: main.pdf
-         path: texfile/main.pdf
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: main.pdf
+          path: texfile/main.pdf
