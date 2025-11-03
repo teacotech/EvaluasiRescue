@@ -1,0 +1,16 @@
+name: Compile the .tex to PDF Fuck yeah
+
+on: [push]
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      -name: Checkout
+       uses: actions/checkout@v2
+
+      -name: Fuck PDF
+       uses: hspaans/latexmk-action@v2.1.0
+       with:
+         filename: ./texfile/main.tex
+       run: |
+         mv main.pdf ./texfile/main.pdf
