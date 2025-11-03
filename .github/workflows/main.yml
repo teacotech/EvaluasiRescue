@@ -1,14 +1,14 @@
 name: CI
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   compile:
     runs-on: ubuntu-latest
-
     steps:
       -name: checkout repo
        uses: actions/checkout@v5
+      -run: echo "Bajingan."
 
       -name: Generate PDF
        uses: hspaans/latexmk-action@v2.1.0
@@ -16,7 +16,6 @@ jobs:
          format: pdf
          filename: main.tex
          path: texfile/main.tex
-         options: -shell-escape
 
       -name: Upload PDF artifact
        uses: actions/upload-artifact@v4
