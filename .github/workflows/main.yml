@@ -7,7 +7,7 @@ jobs:
     steps:
       -uses: actions/checkout@v5
       -uses: hspaans/latexmk-action@v2.1.0
-       with:
+      -with:
          filename: ./texfile/main.tex
-       run: |
+      -run: |
          mv main.pdf ./texfile/main.pdf
