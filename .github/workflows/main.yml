@@ -6,9 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -uses: actions/checkout@v5
-
-      -name: Fuck PDF
-       uses: hspaans/latexmk-action@v2.1.0
+      -uses: hspaans/latexmk-action@v2.1.0
        with:
          filename: ./texfile/main.tex
        run: |
